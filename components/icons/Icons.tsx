@@ -41,3 +41,20 @@ export const CheckIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
         <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
 );
+
+export const SparklesIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9.96 2.15A2.5 2.5 0 0 1 12 1a2.5 2.5 0 0 1 2.04 1.15" />
+        <path d="M2.15 14.04A2.5 2.5 0 0 1 1 12a2.5 2.5 0 0 1 1.15-2.04" />
+        <path d="M14.04 21.85A2.5 2.5 0 0 1 12 23a2.5 2.5 0 0 1-2.04-1.15" />
+        <path d="M21.85 9.96A2.5 2.5 0 0 1 23 12a2.5 2.5 0 0 1-1.15 2.04" />
+        <path d="M12 4v2" />
+        <path d="M12 18v2" />
+        <path d="M4 12h2" />
+        <path d="M18 12h2" />
+        <path d="m18.36 5.64-.7-.7" />
+        <path d="m6.34 17.66-.7-.7" />
+        <path d="m18.36 18.36-.7-.7" />
+        <path d="m6.34 6.34-.7-.7" />
+    </svg>
+);

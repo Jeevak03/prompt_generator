@@ -1,9 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { SdlcRole } from './types';
-import { generateTasksFromDocuments } from './services/geminiService';
+import { generateTasksFromDocuments, generateOrchestrationPrompt } from './services/geminiService';
 import FileUpload from './components/FileUpload';
 import ResultsDisplay from './components/ResultsDisplay';
 import Loader from './components/Loader';
+import OrchestrationPromptModal from './components/OrchestrationPromptModal';
+import { SparklesIcon } from './components/icons/Icons';
 import { MAX_FILES, MAX_FILE_SIZE_MB } from './constants';
 
 const mergeResults = (existingResults: SdlcRole[], newResults: SdlcRole[]): SdlcRole[] => {
@@ -40,6 +42,11 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [apiKeyError, setApiKeyError] = useState<boolean>(false);
   const [progress, setProgress] = useState<string | null>(null);
+
+  const [isGeneratingOrchestration, setIsGeneratingOrchestration] = useState(false);
+  const [orchestrationPrompt, setOrchestrationPrompt] = useState<string | null>(null);
+  const [showOrchestrationModal, setShowOrchestrationModal] = useState(false);
+
 
   useEffect(() => {
     if (!process.env.API_KEY) {
@@ -96,6 +103,24 @@ const App: React.FC = () => {
     }
   }, [files, apiKeyError]);
 
+  const handleCreateOrchestration = useCallback(async () => {
+    if (!results) return;
+
+    setIsGeneratingOrchestration(true);
+    setError(null);
+    try {
+      const prompt = await generateOrchestrationPrompt(results);
+      setOrchestrationPrompt(prompt);
+      setShowOrchestrationModal(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred during orchestration prompt generation.');
+      setOrchestrationPrompt(null);
+      setShowOrchestrationModal(false);
+    } finally {
+      setIsGeneratingOrchestration(false);
+    }
+  }, [results]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-sky-900 text-slate-200 font-sans">
       <main className="container mx-auto p-4 md:p-8">
@@ -134,6 +159,16 @@ const App: React.FC = () => {
         {results && !isLoading && (
           <div className="mt-8">
              <h2 className="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-500">Generated Results</h2>
+            <div className="mb-6 flex justify-center">
+                <button
+                    onClick={handleCreateOrchestration}
+                    disabled={isGeneratingOrchestration}
+                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:from-sky-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-75 transition-all duration-300 disabled:from-slate-600 disabled:to-slate-700 disabled:cursor-not-allowed disabled:shadow-none"
+                >
+                    <SparklesIcon className="w-5 h-5" />
+                    {isGeneratingOrchestration ? 'Generating...' : 'Create Orchestration Prompt'}
+                </button>
+            </div>
             <ResultsDisplay results={results} />
           </div>
         )}
@@ -147,6 +182,13 @@ const App: React.FC = () => {
       <footer className="text-center p-4 text-slate-600 text-sm">
         Powered by Google Gemini API
       </footer>
+
+      {showOrchestrationModal && orchestrationPrompt && (
+        <OrchestrationPromptModal
+            prompt={orchestrationPrompt}
+            onClose={() => setShowOrchestrationModal(false)}
+        />
+      )}
     </div>
   );
 };

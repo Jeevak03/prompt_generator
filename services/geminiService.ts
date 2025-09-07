@@ -97,3 +97,51 @@ export async function generateTasksFromDocuments(base64Data: string, documentNam
     throw new Error("An unknown error occurred while communicating with the Gemini API.");
   }
 }
+
+export async function generateOrchestrationPrompt(roles: SdlcRole[]): Promise<string> {
+  const model = "gemini-2.5-flash";
+
+  const formattedRolesAndTasks = roles.map(role => {
+    const tasks = role.tasks.map(task => `  - Task: ${task.taskDescription}\n    - NLP Prompt: ${task.nlpPrompt}`).join('\n');
+    return `Role: ${role.roleName}\nFrameworks: ${role.frameworks.join(', ')}\nTasks:\n${tasks}`;
+  }).join('\n\n');
+
+  const prompt = `
+    You are an expert AI Project Orchestrator. Your task is to create a master prompt that can be used to guide another advanced AI agent to autonomously manage and execute a software development project.
+
+    Below is a list of roles and their identified tasks for a project, derived from the project documentation:
+    ---
+    ${formattedRolesAndTasks}
+    ---
+
+    Based on this information, generate a single, comprehensive "orchestration prompt". This prompt should be a set of instructions for an AI agent. When given this prompt, the agent should be able to:
+
+    1.  Assume the persona of an autonomous Project Manager.
+    2.  Understand the full scope of the project based on the provided roles and tasks.
+    3.  Establish a logical sequence and a high-level project plan for the tasks, identifying potential dependencies.
+    4.  Simulate task delegation to the appropriate roles and track progress.
+    5.  Define a communication and reporting protocol. For example, generating daily stand-up summaries or weekly progress reports.
+    6.  Outline a decision-making framework for handling ambiguities, prioritizing tasks, and managing hypothetical roadblocks.
+    7.  Engage in a continuous loop of planning, executing, and reporting to drive the project to completion.
+
+    The final output should be ONLY the orchestration prompt itself, written in a clear, instructive, and detailed tone. It should be ready to be copied and used to initialize a powerful AI model for project management simulation. Do not include any introductory text like "Here is the orchestration prompt:".
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: model,
+      contents: prompt,
+      config: {
+        temperature: 0.7,
+      },
+    });
+
+    return response.text.trim();
+  } catch (error) {
+    console.error("Error calling Gemini API for orchestration prompt:", error);
+    if (error instanceof Error) {
+        throw new Error(`Failed to generate orchestration prompt: ${error.message}`);
+    }
+    throw new Error("An unknown error occurred while generating the orchestration prompt.");
+  }
+}
