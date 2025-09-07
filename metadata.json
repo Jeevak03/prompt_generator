@@ -1,0 +1,5 @@
+{
+  "name": "Agile SDLC Task & Prompt Generator",
+  "description": "Upload project documents (requirements, SOWs, coding standards, etc.) to generate potential tasks and NLP prompts. The application categorizes these tasks by SDLC roles across Agile frameworks like Scrum, SAFe, and Kanban, streamlining project planning and AI tool integration.",
+  "requestFramePermissions": []
+}
