@@ -1,4 +1,3 @@
-
 # Agile SDLC Task & Prompt Generator
 
 This application is a powerful tool for project managers, team leads, and developers designed to streamline the initial phases of project planning. By uploading project documents such as requirements, Statements of Work (SOWs), or coding standards, users can automatically generate a structured list of tasks categorized by Software Development Life Cycle (SDLC) roles and relevant Agile frameworks.
@@ -34,6 +33,64 @@ Beyond simple task creation, it also generates actionable Natural Language Proce
 4.  **Review Results**: The generated tasks will appear in an accordion, neatly organized by SDLC role. You can expand each role to see the detailed tasks, associated Agile frameworks, and the corresponding NLP prompts.
 5.  **Create Orchestration Prompt**: Once you are satisfied with the generated tasks, click the **"✨ Create Orchestration Prompt"** button.
 6.  **Use the Master Prompt**: A modal will appear displaying the orchestration prompt. Copy it and use it with a powerful AI model (like Gemini) to kick off an autonomous project management simulation.
+
+## 🔧 Local Development Setup
+
+To run this application on your local machine, follow these steps. This project is set up to run directly in the browser without a complex build process.
+
+### 1. Prerequisites
+
+-   A modern web browser (like Chrome, Firefox, or Edge).
+-   A code editor (like Visual Studio Code).
+-   A [Google Gemini API Key](https://aistudio.google.com/app/apikey).
+-   A local web server. Most operating systems come with tools for this. For example, Python or Node.js can be used to run a simple server.
+
+### 2. Configuration
+
+The application requires a Google Gemini API key to function. Because the code runs in a browser, you need to securely provide this key for local development.
+
+1.  **Create a Configuration File**: In the root directory of the project, create a new file named `env.js`.
+2.  **Add Your API Key**: Open `env.js` and add the following line, replacing `'YOUR_GEMINI_API_KEY_HERE'` with your actual API key:
+    ```javascript
+    // env.js
+    window.process = { env: { API_KEY: 'YOUR_GEMINI_API_KEY_HERE' } };
+    ```
+    *__Note:__ This method is suitable for local development only. Do not commit this file or expose it publicly if it contains a valid API key.*
+
+3.  **Link the Configuration File**: Open the `index.html` file and add the following script tag inside the `<head>` section, just before the `<script type="importmap">`:
+    ```html
+    <!-- index.html -->
+    <head>
+      ...
+      <script src="/env.js"></script>
+      <script type="importmap">
+      ...
+    </head>
+    ```
+
+### 3. Running the Application
+
+You need to serve the files from a local web server because modern browsers have security restrictions (CORS policy) that prevent modules from loading directly from the local file system (`file:///`).
+
+1.  Open your terminal or command prompt.
+2.  Navigate to the root directory of the project.
+3.  Start a local server. Here are a few common examples:
+
+    -   **Using Python 3:**
+        ```bash
+        python -m http.server
+        ```
+        Then open your browser to `http://localhost:8000`.
+
+    -   **Using Node.js and `serve`:**
+        If you have Node.js installed, you can use the `serve` package.
+        ```bash
+        npx serve
+        ```
+        The server will give you an address, typically `http://localhost:3000`. Open this address in your browser.
+
+4.  Once the server is running, you can access the application and start generating tasks.
+
 
 ## 🛠️ Technologies Used
 
